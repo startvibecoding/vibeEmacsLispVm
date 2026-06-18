@@ -40,7 +40,13 @@ func (p *parser) parseExpr() (Expr, error) {
 	case tokenRParen:
 		return nil, newError(p.cur.pos, "unexpected )")
 	case tokenQuote:
-		return p.parseQuote()
+		return p.parsePrefixed("quote")
+	case tokenBackquote:
+		return p.parsePrefixed("backquote")
+	case tokenComma:
+		return p.parsePrefixed("comma")
+	case tokenCommaSplice:
+		return p.parsePrefixed("comma-splice")
 	case tokenString:
 		v := String(p.cur.lit)
 		return v, p.advance()
@@ -74,17 +80,17 @@ func (p *parser) parseList() (Expr, error) {
 	return items, nil
 }
 
-func (p *parser) parseQuote() (Expr, error) {
+func (p *parser) parsePrefixed(name string) (Expr, error) {
 	start := p.cur.pos
 	if err := p.advance(); err != nil {
 		return nil, err
 	}
 	if p.cur.typ == tokenEOF {
-		return nil, newError(start, "quote requires an expression")
+		return nil, newError(start, "%s requires an expression", name)
 	}
 	expr, err := p.parseExpr()
 	if err != nil {
 		return nil, err
 	}
-	return List{Symbol("quote"), expr}, nil
+	return List{Symbol(name), expr}, nil
 }

@@ -12,6 +12,9 @@ const (
 	tokenLParen
 	tokenRParen
 	tokenQuote
+	tokenBackquote
+	tokenComma
+	tokenCommaSplice
 	tokenString
 	tokenAtom
 )
@@ -53,6 +56,16 @@ func (l *lexer) next() (token, error) {
 	case '\'':
 		l.advance()
 		return token{typ: tokenQuote, lit: "'", pos: start}, nil
+	case '`':
+		l.advance()
+		return token{typ: tokenBackquote, lit: "`", pos: start}, nil
+	case ',':
+		l.advance()
+		if l.i < len(l.src) && l.peek() == '@' {
+			l.advance()
+			return token{typ: tokenCommaSplice, lit: ",@", pos: start}, nil
+		}
+		return token{typ: tokenComma, lit: ",", pos: start}, nil
 	case '"':
 		return l.readString()
 	default:
@@ -115,7 +128,7 @@ func (l *lexer) readAtom() (token, error) {
 	out := make([]rune, 0)
 	for l.i < len(l.src) {
 		ch := l.peek()
-		if unicode.IsSpace(ch) || ch == '(' || ch == ')' || ch == '\'' || ch == ';' {
+		if unicode.IsSpace(ch) || ch == '(' || ch == ')' || ch == '\'' || ch == '`' || ch == ',' || ch == ';' {
 			break
 		}
 		out = append(out, l.advance())

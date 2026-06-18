@@ -32,6 +32,19 @@ func TestParseBasicExpressions(t *testing.T) {
 	}
 }
 
+func TestParseBackquoteComma(t *testing.T) {
+	exprs, err := Parse("`(a ,b ,@c)")
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if len(exprs) != 1 {
+		t.Fatalf("len(exprs) = %d, want 1", len(exprs))
+	}
+	if got := Stringify(exprs[0]); got != "(backquote (a (comma b) (comma-splice c)))" {
+		t.Fatalf("expr = %s", got)
+	}
+}
+
 func TestParseStringEscapes(t *testing.T) {
 	exprs, err := Parse(`"a\n\"b\""`)
 	if err != nil {
@@ -51,6 +64,9 @@ func TestParseErrors(t *testing.T) {
 		`(concat "a"`,
 		`)`,
 		`'`,
+		"`",
+		`,`,
+		`,@`,
 		`"unterminated`,
 	}
 	for _, src := range tests {

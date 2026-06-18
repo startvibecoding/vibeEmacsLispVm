@@ -23,6 +23,7 @@
 - 带基础转义的字符串：`"hello\nworld"`
 - 数字：`1`、`3.14`
 - quote 简写：`'("read" "grep")`
+- backquote/comma：`` `(a ,b ,@c) ``
 - 行注释：`; comment`
 
 支持特殊表单：
@@ -30,12 +31,25 @@
 - `quote`
 - `progn`
 - `let`
+- `let*`
 - `setq`
 - `if`
 - `when`
 - `unless`
 - `and`
 - `or`
+- `while`
+- `cond`
+- `catch`
+- `throw`
+- `lambda`
+- `defun`
+- `backquote`
+- `comma`
+- `comma-splice`
+- `defmacro`
+- `with-current-buffer`
+- `save-current-buffer`
 
 支持内置函数：
 
@@ -43,18 +57,28 @@
 - `format`（仅支持 `%s`）
 - `list`
 - `length`
-- `=`、`<`、`>`
-- `string=`
+- `cons`、`car`、`cdr`、`nth`、`append`、`reverse`、`member`、`assoc`
+- `funcall`、`apply`
+- `macroexpand-1`、`macroexpand`
+- `+`、`-`、`*`、`/`
+- `=`、`/=`、`<`、`<=`、`>`、`>=`
+- `eq`、`equal`
+- `string=`、`string-equal`、`string-lessp`、`string<`、`string-greaterp`、`string>`
 - `not`
+- `null`、`symbolp`、`stringp`、`numberp`、`listp`、`consp`、`atom`
+- `bufferp`、`buffer-name`、`current-buffer`、`set-buffer`、`get-buffer`、`get-buffer-create`、`generate-new-buffer`、`kill-buffer`
+- `point`、`point-min`、`point-max`、`goto-char`、`insert`、`delete-region`、`buffer-substring`、`buffer-string`、`erase-buffer`
+- `markerp`、`make-marker`、`point-marker`、`copy-marker`、`marker-position`、`marker-buffer`、`set-marker`
+
+函数当前只支持固定参数列表；尚不支持 `&optional`、`&rest` 和完整 Emacs Lisp lambda-list 语义。
 
 不支持：
 
 - 完整 Emacs Lisp 运行时
-- 宏
-- backquote/comma
-- reader macros
+- 完整 Emacs Lisp lambda-list 语义
+- quote/backquote/comma 以外的 reader macros
 - vector
-- buffer、process、file、shell、network、package 等运行时能力
+- 文件关联 buffer、window、frame、process、file、shell、network、package 等运行时能力
 
 ## 嵌入使用
 

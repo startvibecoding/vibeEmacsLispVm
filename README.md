@@ -29,6 +29,7 @@ Supported syntax:
 - Strings with basic escapes: `"hello\nworld"`
 - Numbers: `1`, `3.14`
 - Quote shorthand: `'("read" "grep")`
+- Backquote/comma: `` `(a ,b ,@c) ``
 - Line comments: `; comment`
 
 Supported special forms:
@@ -36,12 +37,25 @@ Supported special forms:
 - `quote`
 - `progn`
 - `let`
+- `let*`
 - `setq`
 - `if`
 - `when`
 - `unless`
 - `and`
 - `or`
+- `while`
+- `cond`
+- `catch`
+- `throw`
+- `lambda`
+- `defun`
+- `backquote`
+- `comma`
+- `comma-splice`
+- `defmacro`
+- `with-current-buffer`
+- `save-current-buffer`
 
 Supported builtins:
 
@@ -49,18 +63,33 @@ Supported builtins:
 - `format` (`%s` only)
 - `list`
 - `length`
-- `=`, `<`, `>`
-- `string=`
+- `cons`, `car`, `cdr`, `nth`, `append`, `reverse`, `member`, `assoc`
+- `funcall`, `apply`
+- `macroexpand-1`, `macroexpand`
+- `+`, `-`, `*`, `/`
+- `=`, `/=`, `<`, `<=`, `>`, `>=`
+- `eq`, `equal`
+- `string=`, `string-equal`, `string-lessp`, `string<`, `string-greaterp`, `string>`
 - `not`
+- `null`, `symbolp`, `stringp`, `numberp`, `listp`, `consp`, `atom`
+- `bufferp`, `buffer-name`, `current-buffer`, `set-buffer`, `get-buffer`,
+  `get-buffer-create`, `generate-new-buffer`, `kill-buffer`
+- `point`, `point-min`, `point-max`, `goto-char`, `insert`, `delete-region`,
+  `buffer-substring`, `buffer-string`, `erase-buffer`
+- `markerp`, `make-marker`, `point-marker`, `copy-marker`, `marker-position`,
+  `marker-buffer`, `set-marker`
+
+Function support currently accepts fixed argument lists only; `&optional`,
+`&rest`, and other full Emacs Lisp lambda-list features are not implemented.
 
 Not supported:
 
 - Full Emacs Lisp runtime
-- Macros
-- Backquote/comma
-- Reader macros
+- Full Emacs Lisp lambda-list features
+- Reader macros beyond quote/backquote/comma
 - Vectors
-- Buffers, processes, files, shell, network, packages
+- Filesystem-backed buffers, windows, frames, processes, files, shell, network,
+  packages
 
 ## Embedding
 
