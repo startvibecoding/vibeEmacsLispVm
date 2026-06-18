@@ -19,7 +19,7 @@ func TestEvalCoreFormsAndBuiltins(t *testing.T) {
 	if err != nil {
 		t.Fatalf("EvalString() error = %v", err)
 	}
-	if got := rawString(v); got != "ok:hello world" {
+	if got := string(v.(String)); got != "ok:hello world" {
 		t.Fatalf("result = %q", got)
 	}
 }
@@ -67,14 +67,14 @@ func TestRegisterFunc(t *testing.T) {
 		if len(args) != 2 {
 			t.Fatalf("args = %d, want 2", len(args))
 		}
-		return String(rawString(args[0]) + "/" + rawString(args[1])), nil
+		return String(string(args[0].(String)) + "/" + string(args[1].(String))), nil
 	})
 
 	v, err := e.EvalString(context.Background(), `(join-with-slash "phase" "agent")`)
 	if err != nil {
 		t.Fatalf("EvalString() error = %v", err)
 	}
-	if got := rawString(v); got != "phase/agent" {
+	if got := string(v.(String)); got != "phase/agent" {
 		t.Fatalf("result = %q", got)
 	}
 }
@@ -96,6 +96,36 @@ func TestRegisterSpecialControlsEvaluation(t *testing.T) {
 	if got := Stringify(v); got != `(missing-symbol "ok")` {
 		t.Fatalf("result = %s", got)
 	}
+}
+
+func TestRegisteredNames(t *testing.T) {
+	e := New()
+	e.RegisterFunc("host-fn", func(ctx *EvalContext, args []Value) (Value, error) {
+		return Nil, nil
+	})
+	e.RegisterSpecial("host-special", func(ctx *EvalContext, unevaluated []Expr) (Value, error) {
+		return Nil, nil
+	})
+	e.DefineGlobal("host-global", String("value"))
+
+	if !containsName(e.FuncNames(), "host-fn") {
+		t.Fatalf("FuncNames() missing host-fn: %v", e.FuncNames())
+	}
+	if !containsName(e.SpecialNames(), "host-special") {
+		t.Fatalf("SpecialNames() missing host-special: %v", e.SpecialNames())
+	}
+	if !containsName(e.GlobalNames(), "host-global") {
+		t.Fatalf("GlobalNames() missing host-global: %v", e.GlobalNames())
+	}
+}
+
+func containsName(names []string, want string) bool {
+	for _, name := range names {
+		if name == want {
+			return true
+		}
+	}
+	return false
 }
 
 func TestEvalContextCancellation(t *testing.T) {

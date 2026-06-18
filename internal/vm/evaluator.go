@@ -1,8 +1,9 @@
-package elispvm
+package vm
 
 import (
 	"context"
 	"fmt"
+	"sort"
 )
 
 // BuiltinFunc is a Go function registered as a Lisp function. Arguments have
@@ -52,6 +53,21 @@ func (e *Evaluator) RegisterSpecial(name string, fn SpecialForm) {
 // DefineGlobal binds a global variable.
 func (e *Evaluator) DefineGlobal(name string, v Value) {
 	e.globals.Define(name, v)
+}
+
+// FuncNames returns the registered Lisp function names in sorted order.
+func (e *Evaluator) FuncNames() []string {
+	return sortedKeys(e.funcs)
+}
+
+// SpecialNames returns the registered special form names in sorted order.
+func (e *Evaluator) SpecialNames() []string {
+	return sortedKeys(e.specials)
+}
+
+// GlobalNames returns the defined global variable names in sorted order.
+func (e *Evaluator) GlobalNames() []string {
+	return e.globals.Names()
 }
 
 // EvalString parses and evaluates all top-level expressions in src, returning
@@ -174,4 +190,13 @@ func (ctx *EvalContext) evalList(list List) (Value, error) {
 		evaluated = append(evaluated, v)
 	}
 	return fn(ctx, evaluated)
+}
+
+func sortedKeys[V any](m map[string]V) []string {
+	names := make([]string, 0, len(m))
+	for name := range m {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }

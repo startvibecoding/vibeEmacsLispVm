@@ -1,4 +1,4 @@
-package elispvm
+package vm
 
 import (
 	"fmt"

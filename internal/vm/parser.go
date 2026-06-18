@@ -1,4 +1,4 @@
-package elispvm
+package vm
 
 // Parse parses all top-level expressions from src.
 func Parse(src string) ([]Expr, error) {

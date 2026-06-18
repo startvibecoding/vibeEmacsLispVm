@@ -1,4 +1,6 @@
-package elispvm
+package vm
+
+import "sort"
 
 // Env is a lexical environment.
 type Env struct {
@@ -43,4 +45,20 @@ func (e *Env) Set(name string, v Value) {
 		}
 	}
 	e.values[name] = v
+}
+
+// Names returns names bound in this environment and its parents in sorted order.
+func (e *Env) Names() []string {
+	seen := make(map[string]struct{})
+	for cur := e; cur != nil; cur = cur.parent {
+		for name := range cur.values {
+			seen[name] = struct{}{}
+		}
+	}
+	names := make([]string, 0, len(seen))
+	for name := range seen {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }

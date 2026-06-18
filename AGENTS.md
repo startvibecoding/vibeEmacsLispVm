@@ -42,6 +42,10 @@ agnostic.
 - `(*Evaluator).RegisterFunc(name, fn)`
 - `(*Evaluator).RegisterSpecial(name, fn)`
 - `(*Evaluator).DefineGlobal(name, value)`
+- `(*Evaluator).FuncNames()`
+- `(*Evaluator).SpecialNames()`
+- `(*Evaluator).GlobalNames()`
+- `NewEnv(parent)`
 - `Stringify(value)`
 - Runtime value types: `Symbol`, `String`, `Number`, `List`, `Nil`
 
@@ -84,14 +88,13 @@ Builtins:
 
 ## Repository Layout
 
-- `lexer.go` - tokenization for the supported S-expression subset
-- `parser.go` - parser and quote desugaring
-- `evaluator.go` - evaluator, registration API, evaluation context
-- `env.go` - lexical environment
-- `builtins.go` - core special forms and builtins
-- `value.go` - runtime value types and formatting
-- `error.go` - parse/eval error helpers
-- `*_test.go` - parser and evaluator tests
+- `api.go` - public API facade for downstream imports
+- `doc.go` - package documentation for the public root package
+- `internal/vm/` - parser, evaluator, runtime values, core forms, and builtins
+- `internal/repl/` - command-line read-eval-print loop and line editor
+- `cmd/elispvm/` - standalone CLI entrypoint
+- `examples/` - small embedding and CLI script examples
+- `*_test.go` - public API parser and evaluator tests
 
 ## Implementation Rules
 
@@ -132,4 +135,3 @@ such as `workflow`, `phase`, `parallel`, `agent`, `result`, and `log` via this
 library's registration API.
 
 This repository should remain a generic Elisp subset VM, not a workflow runtime.
-
