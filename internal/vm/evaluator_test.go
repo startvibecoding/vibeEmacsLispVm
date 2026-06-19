@@ -484,6 +484,25 @@ func TestEvalErrors(t *testing.T) {
 	}
 }
 
+func TestEvalFixedArgumentListsRejectLambdaKeywords(t *testing.T) {
+	e := newTestEvaluator()
+	cases := []string{
+		`(lambda (&rest args) args)`,
+		`(lambda (&optional x) x)`,
+		`(lambda (&body body) body)`,
+		`(defun bad (&rest args) args)`,
+		`(defun bad (&optional x) x)`,
+		`(defmacro bad (&rest args) args)`,
+		`(defmacro bad (&optional x) x)`,
+		`(defmacro bad (&body body) body)`,
+	}
+	for _, src := range cases {
+		t.Run(src, func(t *testing.T) {
+			evalExpectError(t, e, src)
+		})
+	}
+}
+
 func TestEvalClosureCapture(t *testing.T) {
 	e := newTestEvaluator()
 	// Closure should capture variable by reference
